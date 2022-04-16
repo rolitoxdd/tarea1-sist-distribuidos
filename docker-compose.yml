@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  client:
+    build: 
+      context: .
+      dockerfile: client.Dockerfile
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+  bdd:
+    image: bitnami/postgresql:14.2.0-debian-10-r64
+    environment:
+      - POSTGRESQL_USERNAME=root
+      - POSTGRESQL_PASSWORD=root
+      - POSTGRESQL_DATABASE=test

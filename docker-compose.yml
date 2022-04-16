@@ -1,16 +1,21 @@
 version: '3.8'
 services:
-  client:
-    build: 
-      context: .
-      dockerfile: client.Dockerfile
+  # client:
+  #   build: 
+  #     context: .
+  #     dockerfile: client.Dockerfile
   server:
     build:
       context: .
       dockerfile: server.Dockerfile
+    env_file: .env
+    volumes:
+      - ./data_base.py:/app/data_base.py
+      - ./server.py:/app/server.py
+    ports:
+      - 50051:50051
   bdd:
     image: bitnami/postgresql:14.2.0-debian-10-r64
-    environment:
-      - POSTGRESQL_USERNAME=root
-      - POSTGRESQL_PASSWORD=root
-      - POSTGRESQL_DATABASE=test
+    volumes:
+      - ./schema/initial.sql:/docker-entrypoint-initdb.d/initial.sql
+    env_file: .env

@@ -1,5 +1,6 @@
-FROM python:3.10.4-alpine3.15
+FROM python:3.10
 WORKDIR /app
-COPY requirements.txt .
+COPY requirements.txt example.proto ./
 RUN pip install -r requirements.txt
-CMD ["python3", "server.py"]
+RUN python3 -m grpc_tools.protoc --python_out=. --grpc_python_out=. --proto_path=. example.proto
+CMD ["python3", "-u", "server.py"]

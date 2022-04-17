@@ -1,21 +1,40 @@
 version: '3.8'
 services:
-  # client:
-  #   build: 
-  #     context: .
-  #     dockerfile: client.Dockerfile
+  client:
+    build: ./api
+    environment:
+      - GRPC_SERVER_HOST=server
+      - PORT=3000
+      - PROTO_PATH=/app/item.proto
+      - REDIS_HOST=cache
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api/index.js:/app/index.js
+      - ./api/grpc_client.js:/app/grpc_client.js
+      - ./server/item.proto:/app/item.proto
+    depends_on: 
+      - server
+      - cache
   server:
-    build:
-      context: .
-      dockerfile: server.Dockerfile
+    build: ./server
     env_file: .env
     volumes:
-      - ./data_base.py:/app/data_base.py
-      - ./server.py:/app/server.py
+      - ./server/data_base.py:/app/data_base.py
+      - ./server/server.py:/app/server.py
     ports:
       - 50051:50051
+    depends_on: 
+      - bdd
   bdd:
     image: bitnami/postgresql:14.2.0-debian-10-r64
     volumes:
       - ./schema/initial.sql:/docker-entrypoint-initdb.d/initial.sql
     env_file: .env
+  cache:
+    image: bitnami/redis:6.0.16
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"

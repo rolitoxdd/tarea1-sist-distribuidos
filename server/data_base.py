@@ -1,4 +1,6 @@
+import string
 import psycopg2
+from psycopg2._psycopg import connection
 from environs import Env
 
 
@@ -7,7 +9,7 @@ class Database:
         self.conn = False
         pass
 
-    def connectionDB(self):
+    def connectionDB(self) -> connection:
         env = Env()
         env.read_env()
         #
@@ -22,16 +24,16 @@ class Database:
             )
             return self.conn
 
-    def list_of_elements(self):
-        cursor = self.connectionDB().cursor()
-        cursor.execute("""SELECT * FROM products;""")
+    def list_of_elements(self) -> list[tuple[str]]:
+        cursor: psycopg2.cursor = self.connectionDB().cursor()
+        cursor.execute("""SELECT * FROM items;""")
         fet = cursor.fetchall()
         return fet
 
-    def list_by_name(self, name_product):
+    def list_by_name(self, name_product: str) -> list[tuple[str]]:
 
         cursor = self.connectionDB().cursor()
         cursor.execute(
-            f"""SELECT * FROM products WHERE name = {name_product} ;""")
+            f"""SELECT * FROM items WHERE name ILIKE '%{name_product}%' ;""")
         fet = cursor.fetchall()
         return fet

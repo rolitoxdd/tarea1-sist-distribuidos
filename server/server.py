@@ -9,8 +9,7 @@ from data_base import Database
 
 class Inventory(item_pb2_grpc.ItemService):
     def GetItem(self, request, context):
-        print("request", request)
-        # print("context", dir(context))
+        print("[request]", request)
         name = request.name
         if name:
             list_of_elements = db.list_by_name(name)
@@ -39,9 +38,5 @@ def serve():
 
 if __name__ == '__main__':
     db = Database()
-    # conn = db.connectionDB()
-    # print(conn)
-
-    # logging.basicConfig()
     print("listening...")
     serve()

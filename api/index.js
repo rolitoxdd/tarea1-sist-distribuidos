@@ -19,17 +19,19 @@ app.get("/inventory/search", async (req, res) => {
   const { query } = req;
   const q = query.q;
 
-  const redisRes = await client.get(q);
-  console.log(redisRes);
+  let redisRes = await client.get(q);
   if (redisRes) {
-    res.status(200).json(JSON.parse(redisRes));
+    console.log("data from redis");
+    redisRes = JSON.parse(redisRes);
+    res.status(200).json({ products_list: redisRes.items });
   } else {
+    console.log("data from grpc server");
     grpcClient.GetItem({ name: q }, async (err, data) => {
       if (err) {
         res.status(500).json({ err });
       } else {
         await client.set(q, JSON.stringify(data));
-        res.status(200).json({ data });
+        res.status(200).json({ products_list: data.items });
       }
     });
   }

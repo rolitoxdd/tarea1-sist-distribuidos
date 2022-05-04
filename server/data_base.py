@@ -12,7 +12,6 @@ class Database:
     def connectionDB(self) -> connection:
         env = Env()
         env.read_env()
-        #
         if self.conn:
             return self.conn
         else:
